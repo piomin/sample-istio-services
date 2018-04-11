@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: callme-service
+  labels:
+    app: callme-service
+spec:
+  type: NodePort
+  ports:
+  - port: 8091
+    name: http
+  selector:
+    app: callme-service
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: helloworld-v1
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: callme-service
+        version: v1
+    spec:
+      containers:
+      - name: callme-service
+        image: piomin/callme-service:1.0
+        resources:
+          requests:
+            cpu: "100m"
+        imagePullPolicy: IfNotPresent #Always
+        ports:
+        - containerPort: 8091
