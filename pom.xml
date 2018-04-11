@@ -6,5 +6,6 @@
   <packaging>pom</packaging>
   <modules>
   	<module>caller-service</module>
+  	<module>callme-service</module>
   </modules>
 </project>
