@@ -8,3 +8,14 @@ spec:
   route:
   - labels:
       version: v1
+    weight: 20
+  - labels:
+      version: v2
+    weight: 80
+  httpFault:
+    delay:
+      percent: 10
+      fixedDelay: 3s
+    abort:
+      percent: 10
+      httpStatus: 500
