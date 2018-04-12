@@ -16,7 +16,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   creationTimestamp: null
-  name: callme-service
+  name: callme-service-v1
 spec:
   replicas: 1
   strategy: {}

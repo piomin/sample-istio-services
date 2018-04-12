@@ -23,7 +23,7 @@ public class CallerController {
 	@GetMapping("/ping")
 	public String ping() {
 		LOGGER.info("Ping: name={}, version={}", buildProperties.getName(), buildProperties.getVersion());
-		String response = restTemplate.getForObject("http://callme-service/callme/ping", String.class);
+		String response = restTemplate.getForObject("http://callme-service:8091/callme/ping", String.class);
 		return buildProperties.getName() + ":" + buildProperties.getVersion() + ". Calling... " + response; 
 	}
 	
