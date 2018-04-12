@@ -15,7 +15,7 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: callme-service-v1
+  name: callme-service
 spec:
   replicas: 1
   template:
@@ -27,9 +27,6 @@ spec:
       containers:
       - name: callme-service
         image: piomin/callme-service:1.0
-        resources:
-          requests:
-            cpu: "100m"
-        imagePullPolicy: IfNotPresent #Always
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8091

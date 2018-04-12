@@ -1,4 +1,4 @@
-package pl.piomin.services.callme;
+package pl.piomin.services.caller;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,5 +9,5 @@ public class CallmeApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(CallmeApplication.class, args);
 	}
-
+	
 }
