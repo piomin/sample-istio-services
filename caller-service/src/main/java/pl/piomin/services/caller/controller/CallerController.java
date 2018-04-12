@@ -24,6 +24,7 @@ public class CallerController {
 	public String ping() {
 		LOGGER.info("Ping: name={}, version={}", buildProperties.getName(), buildProperties.getVersion());
 		String response = restTemplate.getForObject("http://callme-service:8091/callme/ping", String.class);
+		LOGGER.info("Calling: response={}", response);
 		return buildProperties.getName() + ":" + buildProperties.getVersion() + ". Calling... " + response; 
 	}
 	
