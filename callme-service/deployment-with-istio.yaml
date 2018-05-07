@@ -16,7 +16,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   creationTimestamp: null
-  name: callme-service-v2
+  name: callme-service-v1
 spec:
   replicas: 1
   strategy: {}
@@ -27,10 +27,10 @@ spec:
       creationTimestamp: null
       labels:
         app: callme-service
-        version: v2
+        version: v1
     spec:
       containers:
-      - image: piomin/callme-service:2.0
+      - image: piomin/callme-service:1.0
         imagePullPolicy: IfNotPresent
         name: callme-service
         ports:
