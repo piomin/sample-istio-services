@@ -1,0 +1,75 @@
+apiVersion: config.istio.io/v1alpha2
+kind: RouteRule
+metadata:
+  name: callme-service-v1
+spec:
+  destination:
+    name: callme-service
+  precedence: 4
+  match:
+    source:
+      name: caller-service
+    request:
+      headers:
+        x-version:
+          exact: "v1"
+  route:
+  - labels:
+      version: v1
+---
+apiVersion: config.istio.io/v1alpha2
+kind: RouteRule
+metadata:
+  name: callme-service-v2
+spec:
+  destination:
+    name: callme-service
+  precedence: 3
+  match:
+    source:
+      name: caller-service
+    request:
+      headers:
+        x-version:
+          exact: "v2"
+  route:
+  - labels:
+      version: v2
+---
+apiVersion: config.istio.io/v1alpha2
+kind: RouteRule
+metadata:
+  name: callme-service-v1-default
+spec:
+  destination:
+    name: callme-service
+  precedence: 2
+  match:
+    source:
+      name: caller-service
+      labels:
+        version: v1
+  route:
+  - labels:
+      version: v1
+    weight: 50
+  - labels:
+      version: v2
+    weight: 50
+---
+apiVersion: config.istio.io/v1alpha2
+kind: RouteRule
+metadata:
+  name: callme-service-v2-default
+spec:
+  destination:
+    name: callme-service
+  precedence: 1
+  match:
+    source:
+      name: caller-service
+      labels:
+        version: v2
+  route:
+  - labels:
+      version: v2

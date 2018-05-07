@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,9 +19,9 @@ public class CallmeController {
 	BuildProperties buildProperties;
 	
 	@GetMapping("/ping")
-	public String ping() {
-		LOGGER.info("Ping: name={}, version={}", buildProperties.getName(), buildProperties.getVersion());
-		return buildProperties.getName() + ":" + buildProperties.getVersion(); 
+	public String ping(@RequestHeader(name = "x-version") String version) {
+		LOGGER.info("Ping: name={}, version={}, header={}", buildProperties.getName(), buildProperties.getVersion(), version);
+		return buildProperties.getName() + ":" + buildProperties.getVersion() + " with version " + version; 
 	}
 	
 }

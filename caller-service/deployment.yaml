@@ -22,11 +22,11 @@ spec:
     metadata:
       labels:
         app: caller-service
-        version: v1
+        version: v2
     spec:
       containers:
       - name: caller-service
-        image: piomin/caller-service:1.0
+        image: piomin/caller-service:2.0
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8090
