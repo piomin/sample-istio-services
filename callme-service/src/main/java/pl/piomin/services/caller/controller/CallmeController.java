@@ -19,7 +19,7 @@ public class CallmeController {
 	BuildProperties buildProperties;
 
 	@GetMapping("/ping")
-	public String ping(@RequestHeader(name = "x-version") String version) {
+	public String ping(@RequestHeader(name = "x-version", required = false) String version) {
 		LOGGER.info("Ping: name={}, version={}, header={}", buildProperties.getName(), buildProperties.getVersion(), version);
 		return buildProperties.getName() + ":" + buildProperties.getVersion() + " with version " + version;
 	}
