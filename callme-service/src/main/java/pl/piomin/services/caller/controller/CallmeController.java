@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class CallmeController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CallmeController.class);
-	
+
 	@Autowired
 	BuildProperties buildProperties;
-	
+
 	@GetMapping("/ping")
 	public String ping(@RequestHeader(name = "x-version") String version) {
 		LOGGER.info("Ping: name={}, version={}, header={}", buildProperties.getName(), buildProperties.getVersion(), version);
-		return buildProperties.getName() + ":" + buildProperties.getVersion() + " with version " + version; 
+		return buildProperties.getName() + ":" + buildProperties.getVersion() + " with version " + version;
 	}
-	
+
 }

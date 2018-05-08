@@ -15,18 +15,18 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: caller-service
+  name: caller-service-v1
 spec:
   replicas: 1
   template:
     metadata:
       labels:
         app: caller-service
-        version: v2
+        version: v1
     spec:
       containers:
       - name: caller-service
-        image: piomin/caller-service:2.0
+        image: piomin/caller-service:1.0
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8090

@@ -19,20 +19,20 @@ import org.springframework.web.client.RestTemplate;
 public class CallerController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CallerController.class);
-	
+
 	@Autowired
 	BuildProperties buildProperties;
 	@Autowired
 	RestTemplate restTemplate;
-	
+
 	@GetMapping("/ping")
 	public String ping(@RequestHeader(name = "x-version") String version) {
 		LOGGER.info("Ping: name={}, version={}, header={}", buildProperties.getName(), buildProperties.getVersion(), version);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("x-version", version);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("x-version", version);
+		HttpEntity<String> entity = new HttpEntity<>(headers);
 		ResponseEntity<String> response = restTemplate.exchange("http://callme-service:8091/callme/ping", HttpMethod.GET, entity, String.class);
-		return buildProperties.getName() + ":" + buildProperties.getVersion() + ". Calling... " + response.getBody() + " with header " + version; 
+		return buildProperties.getName() + ":" + buildProperties.getVersion() + ". Calling... " + response.getBody() + " with header " + version;
 	}
-	
+
 }

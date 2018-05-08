@@ -15,18 +15,18 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: callme-service-v2
+  name: callme-service-v1
 spec:
   replicas: 1
   template:
     metadata:
       labels:
         app: callme-service
-        version: v2
+        version: v1
     spec:
       containers:
       - name: callme-service
-        image: piomin/callme-service:2.0
+        image: piomin/callme-service:1.0
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8091
