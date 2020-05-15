@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: caller-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: caller-service
+  template:
+    metadata:
+      name: caller-service
+      labels:
+        app: caller-service
+        version: v1
+    spec:
+      containers:
+      - name: caller-service
+        image: piomin/caller-service
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+          - name: VERSION
+            value: "v1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: caller-service
+  labels:
+    app: caller-service
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      name: http
+  selector:
+    app: caller-service

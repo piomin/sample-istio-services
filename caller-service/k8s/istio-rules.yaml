@@ -1,0 +1,41 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: caller-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "caller.example.com"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: caller-service-destination
+spec:
+  host: caller-service
+  subsets:
+    - name: v1
+      labels:
+        version: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: caller-service-route
+spec:
+  hosts:
+    - "caller.example.com"
+  gateways:
+    - caller-gateway
+  http:
+    - route:
+        - destination:
+            host: caller-service
+            subset: v1
+      timeout: 0.5s

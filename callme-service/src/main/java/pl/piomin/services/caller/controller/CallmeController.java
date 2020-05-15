@@ -3,6 +3,7 @@ package pl.piomin.services.caller.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,11 +17,13 @@ public class CallmeController {
 	
 	@Autowired
 	BuildProperties buildProperties;
+	@Value("${VERSION}")
+	private String version;
 	
 	@GetMapping("/ping")
 	public String ping() {
-		LOGGER.info("Ping: name={}, version={}", buildProperties.getName(), buildProperties.getVersion());
-		return buildProperties.getName() + ":" + buildProperties.getVersion(); 
+		LOGGER.info("Ping: name={}, version={}", buildProperties.getName(), version);
+		return "I'm callme-service " + version;
 	}
 	
 }
