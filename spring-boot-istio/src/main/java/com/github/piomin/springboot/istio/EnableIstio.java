@@ -7,4 +7,6 @@ import java.lang.annotation.*;
 @Documented
 public @interface EnableIstio {
     int timeout() default 0;
+    String version() default "";
+    int weight() default 0;
 }

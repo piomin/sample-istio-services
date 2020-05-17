@@ -8,6 +8,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
+import java.util.Optional;
+
 public class EnableIstioAnnotationProcessor implements BeanPostProcessor {
 
     private final Logger LOGGER = LoggerFactory.getLogger(EnableIstioAnnotationProcessor.class);
@@ -26,37 +28,66 @@ public class EnableIstioAnnotationProcessor implements BeanPostProcessor {
         EnableIstio enableIstioAnnotation =  managedBeanClass.getAnnotation(EnableIstio.class);
         if (enableIstioAnnotation != null) {
             LOGGER.info("Istio feature enabled: {}", enableIstioAnnotation);
-            DestinationRule dr = istioClient.destinationRule().withName(istioService.getApplicationName() + "-rule").get();
+            DestinationRule dr = istioClient.destinationRule().withName(istioService.getApplicationName() + "-destination").get();
             if (dr == null) {
                 dr = new DestinationRuleBuilder().withApiVersion("networking.istio.io/v1alpha3")
-                        .withNewMetadata().withName(istioService.getApplicationName() + "-rule").endMetadata()
+                        .withNewMetadata().withName(istioService.getApplicationName() + "-destination").endMetadata()
                         .withNewSpec()
-                        .withNewHost(istioService.getApplicationName())
-                        .withSubsets(new SubsetBuilder().withNewName("v1").addToLabels("version", "v1").build())
+                            .withNewHost(istioService.getApplicationName())
+                            .withSubsets(new SubsetBuilder().withNewName("v1").addToLabels("version", "v1").build())
                         .endSpec()
                         .build();
                 istioClient.destinationRule().create(dr);
                 LOGGER.info("New DestinationRule created: {}", dr);
             } else {
                 LOGGER.info("Found DestinationRule: {}", dr);
+                if (!enableIstioAnnotation.version().isEmpty()) {
+                    Optional<Subset> subset = dr.getSpec().getSubsets().stream()
+                            .filter(s -> s.getName().equals(enableIstioAnnotation.version()))
+                            .findAny();
+                    if (subset.isEmpty()) {
+                        istioClient.destinationRule().withName(istioService.getApplicationName() + "-destination")
+                                .edit()
+                                .editSpec()
+                                .addNewSubset()
+                                    .withNewName(enableIstioAnnotation.version())
+                                    .addToLabels("version", enableIstioAnnotation.version())
+                                .endSubset()
+                                .endSpec()
+                                .done();
+                    }
+                }
             }
             VirtualService vs = istioClient.virtualService().withName(istioService.getApplicationName() + "-route").get();
             if (vs == null) {
                  vs = new VirtualServiceBuilder().withApiVersion("networking.istio.io/v1alpha3")
                         .withNewMetadata().withName(istioService.getApplicationName() + "-route").endMetadata()
                         .withNewSpec()
-                        .addToHosts("")
-                        .addNewHttp()
-                        .addNewRoute()
-                        .withNewDestination().withHost(istioService.getApplicationName()).withSubset("v1").endDestination()
-                        .endRoute()
-                        .endHttp()
+                            .addToHosts(istioService.getApplicationName())
+                            .addNewHttp()
+                                .addNewRoute()
+                                    .withNewDestination().withHost(istioService.getApplicationName()).withSubset("v1").endDestination()
+                                .endRoute()
+                            .endHttp()
                         .endSpec()
                         .build();
                 istioClient.virtualService().create(vs);
                 LOGGER.info("New VirtualService created: {}", vs);
             } else {
                 LOGGER.info("Found VirtualService: {}", vs);
+                if (!enableIstioAnnotation.version().isEmpty()) {
+                    istioClient.virtualService().withName(istioService.getApplicationName() + "-route")
+                            .edit()
+                            .editSpec()
+                            .editFirstHttp()
+                            .editFirstRoute()
+                                .withWeight(enableIstioAnnotation.weight() == 0 ? null: enableIstioAnnotation.weight())
+                                .withNewDestination().withHost(istioService.getApplicationName()).withSubset(enableIstioAnnotation.version()).endDestination()
+                            .endRoute()
+                            .endHttp()
+                            .endSpec()
+                            .done();
+                }
             }
         }
         return bean;
