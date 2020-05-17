@@ -1,4 +1,4 @@
-package pl.piomin.services.callme.controller;
+package pl.piomin.services.caller.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
