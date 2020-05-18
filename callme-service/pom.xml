@@ -25,11 +25,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-        <dependency>
-            <groupId>pl.piomin.services</groupId>
-            <artifactId>spring-boot-istio</artifactId>
-            <version>1.1.0</version>
-        </dependency>
     </dependencies>
 
     <build>

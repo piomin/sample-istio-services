@@ -1,5 +1,6 @@
 package com.github.piomin.springboot.istio;
 
+import me.snowdrop.istio.api.Duration;
 import me.snowdrop.istio.api.networking.v1alpha3.*;
 import me.snowdrop.istio.client.IstioClient;
 import org.slf4j.Logger;
@@ -35,6 +36,12 @@ public class EnableIstioAnnotationProcessor implements BeanPostProcessor {
                         .withNewSpec()
                             .withNewHost(istioService.getApplicationName())
                             .withSubsets(new SubsetBuilder().withNewName("v1").addToLabels("version", "v1").build())
+                            .withTrafficPolicy(new TrafficPolicyBuilder()
+                                    .withOutlierDetection(new OutlierDetectionBuilder()
+                                            .withConsecutiveErrors(10)
+                                            .withBaseEjectionTime(new Duration(0, 30000L))
+                                            .build())
+                                    .build())
                         .endSpec()
                         .build();
                 istioClient.destinationRule().create(dr);
@@ -65,6 +72,13 @@ public class EnableIstioAnnotationProcessor implements BeanPostProcessor {
                         .withNewSpec()
                             .addToHosts(istioService.getApplicationName())
                             .addNewHttp()
+                                .withTimeout(enableIstioAnnotation.timeout() == 0 ? null : new Duration(0, (long) enableIstioAnnotation.timeout()))
+                                .withRetries(enableIstioAnnotation.numberOfRetries() == 0 ? null :
+                                        new HTTPRetryBuilder()
+                                                .withAttempts(enableIstioAnnotation.numberOfRetries())
+                                                .withRetryOn("5xx")
+                                                .withPerTryTimeout(new Duration(0, 1000L))
+                                                .build())
                                 .addNewRoute()
                                     .withNewDestination().withHost(istioService.getApplicationName()).withSubset("v1").endDestination()
                                 .endRoute()
@@ -80,6 +94,9 @@ public class EnableIstioAnnotationProcessor implements BeanPostProcessor {
                             .edit()
                             .editSpec()
                             .editFirstHttp()
+                                .withTimeout(enableIstioAnnotation.timeout() == 0 ? null : new Duration(0, (long) enableIstioAnnotation.timeout()))
+                                .withRetries(enableIstioAnnotation.numberOfRetries() == 0 ? null :
+                                        new HTTPRetryBuilder().withAttempts(enableIstioAnnotation.numberOfRetries()).build())
                             .editFirstRoute()
                                 .withWeight(enableIstioAnnotation.weight() == 0 ? null: enableIstioAnnotation.weight())
                                 .withNewDestination().withHost(istioService.getApplicationName()).withSubset(enableIstioAnnotation.version()).endDestination()
