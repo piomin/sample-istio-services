@@ -1,4 +1,4 @@
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
   name: callme-service-destination
@@ -11,8 +11,19 @@ spec:
     - name: v2
       labels:
         version: v2
+#  trafficPolicy: # --- enable for adding circuit breaker into DestinationRule
+#    connectionPool:
+#      http:
+#        http1MaxPendingRequests: 1
+#        maxRequestsPerConnection: 1
+#        maxRetries: 0
+#    outlierDetection:
+#      consecutive5xxErrors: 3
+#      interval: 30s
+#      baseEjectionTime: 1m
+#      maxEjectionPercent: 100
 ---
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: callme-service-route
@@ -29,8 +40,12 @@ spec:
           host: callme-service
           subset: v1
         weight: 20
-      fault:
-        delay:
-          percentage:
-            value: 33
-          fixedDelay: 3s
+      retries:
+        attempts: 3
+        retryOn: gateway-error,connect-failure,refused-stream
+      timeout: 0.5s
+#      fault: # --- enable for inject fault into the route
+#        delay:
+#          percentage:
+#            value: 33
+#          fixedDelay: 3s
