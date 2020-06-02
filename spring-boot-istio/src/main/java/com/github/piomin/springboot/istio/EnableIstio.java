@@ -10,4 +10,5 @@ public @interface EnableIstio {
     String version() default "";
     int weight() default 0;
     int numberOfRetries() default 0;
+    int circuitBreakerErrors() default 0;
 }
