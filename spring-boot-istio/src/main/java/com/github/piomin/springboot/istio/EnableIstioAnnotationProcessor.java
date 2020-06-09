@@ -1,7 +1,7 @@
 package com.github.piomin.springboot.istio;
 
 import me.snowdrop.istio.api.Duration;
-import me.snowdrop.istio.api.networking.v1alpha3.*;
+import me.snowdrop.istio.api.networking.v1beta1.*;
 import me.snowdrop.istio.client.IstioClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,23 +29,18 @@ public class EnableIstioAnnotationProcessor implements BeanPostProcessor {
         EnableIstio enableIstioAnnotation =  managedBeanClass.getAnnotation(EnableIstio.class);
         if (enableIstioAnnotation != null) {
             LOGGER.info("Istio feature enabled: {}", enableIstioAnnotation);
-            DestinationRule dr = istioClient.destinationRule().withName(istioService.getApplicationName() + "-destination").get();
+            DestinationRule
+                    dr = istioClient.v1beta1DestinationRule().withName(istioService.getApplicationName() + "-destination").get();
             if (dr == null) {
-                dr = new DestinationRuleBuilder().withApiVersion("networking.istio.io/v1alpha3")
+                dr = new DestinationRuleBuilder()
                         .withNewMetadata().withName(istioService.getApplicationName() + "-destination").endMetadata()
                         .withNewSpec()
                             .withNewHost(istioService.getApplicationName())
-                            .withSubsets(new SubsetBuilder().withNewName("v1").addToLabels("version", "v1").build())
-                            .withTrafficPolicy(enableIstioAnnotation.circuitBreakerErrors() == 0 ? null : new TrafficPolicyBuilder()
-                                    .withOutlierDetection(new OutlierDetectionBuilder()
-                                            .withConsecutiveErrors(enableIstioAnnotation.circuitBreakerErrors())
-                                            .withBaseEjectionTime(new Duration(0, 30000L))
-                                            .withMaxEjectionPercent(100)
-                                            .build())
-                                    .build())
+                            .withSubsets(istioService.buildSubset(enableIstioAnnotation))
+                            .withTrafficPolicy(istioService.buildCircuitBreaker(enableIstioAnnotation))
                         .endSpec()
                         .build();
-                istioClient.destinationRule().create(dr);
+                istioClient.v1beta1DestinationRule().create(dr);
                 LOGGER.info("New DestinationRule created: {}", dr);
             } else {
                 LOGGER.info("Found DestinationRule: {}", dr);
@@ -54,60 +49,43 @@ public class EnableIstioAnnotationProcessor implements BeanPostProcessor {
                             .filter(s -> s.getName().equals(enableIstioAnnotation.version()))
                             .findAny();
                     if (subset.isEmpty()) {
-                        istioClient.destinationRule().withName(istioService.getApplicationName() + "-destination")
+                        istioClient.v1beta1DestinationRule().withName(istioService.getApplicationName() + "-destination")
                                 .edit()
                                 .editSpec()
-                                .addNewSubset()
-                                    .withNewName(enableIstioAnnotation.version())
-                                    .addToLabels("version", enableIstioAnnotation.version())
-                                .endSubset()
-                                .editOrNewTrafficPolicy()
-                                    .editOrNewOutlierDetection()
-                                        .withConsecutiveErrors(enableIstioAnnotation.circuitBreakerErrors())
-                                        .withBaseEjectionTime(new Duration(0, 30000L))
-                                        .withMaxEjectionPercent(100)
-                                    .endOutlierDetection()
-                                .endTrafficPolicy()
+                                .addNewSubsetLike(istioService.buildSubset(enableIstioAnnotation)).endSubset()
+                                .editOrNewTrafficPolicyLike(istioService.buildCircuitBreaker(enableIstioAnnotation)).endTrafficPolicy()
                                 .endSpec()
                                 .done();
                     }
                 }
             }
-            VirtualService vs = istioClient.virtualService().withName(istioService.getApplicationName() + "-route").get();
+            VirtualService vs = istioClient.v1beta1VirtualService().withName(istioService.getApplicationName() + "-route").get();
             if (vs == null) {
-                 vs = new VirtualServiceBuilder().withApiVersion("networking.istio.io/v1alpha3")
+                 vs = new VirtualServiceBuilder()
                         .withNewMetadata().withName(istioService.getApplicationName() + "-route").endMetadata()
                         .withNewSpec()
                             .addToHosts(istioService.getApplicationName())
                             .addNewHttp()
                                 .withTimeout(enableIstioAnnotation.timeout() == 0 ? null : new Duration(0, (long) enableIstioAnnotation.timeout()))
-                                .withRetries(enableIstioAnnotation.numberOfRetries() == 0 ? null :
-                                        new HTTPRetryBuilder()
-                                                .withAttempts(enableIstioAnnotation.numberOfRetries())
-                                                .withRetryOn("5xx")
-                                                .withPerTryTimeout(new Duration(0, 1000L))
-                                                .build())
-                                .addNewRoute()
-                                    .withNewDestination().withHost(istioService.getApplicationName()).withSubset("v1").endDestination()
-                                .endRoute()
+                                .withNewRetriesLike(istioService.buildRetry(enableIstioAnnotation)).endRetries()
+                                .addNewRoute().withNewDestinationLike(istioService.buildRoute(enableIstioAnnotation)).endDestination().endRoute()
                             .endHttp()
                         .endSpec()
                         .build();
-                istioClient.virtualService().create(vs);
+                istioClient.v1beta1VirtualService().create(vs);
                 LOGGER.info("New VirtualService created: {}", vs);
             } else {
                 LOGGER.info("Found VirtualService: {}", vs);
                 if (!enableIstioAnnotation.version().isEmpty()) {
-                    istioClient.virtualService().withName(istioService.getApplicationName() + "-route")
+                    istioClient.v1beta1VirtualService().withName(istioService.getApplicationName() + "-route")
                             .edit()
                             .editSpec()
                             .editFirstHttp()
                                 .withTimeout(enableIstioAnnotation.timeout() == 0 ? null : new Duration(0, (long) enableIstioAnnotation.timeout()))
-                                .withRetries(enableIstioAnnotation.numberOfRetries() == 0 ? null :
-                                        new HTTPRetryBuilder().withAttempts(enableIstioAnnotation.numberOfRetries()).build())
+                                .withRetries(istioService.buildRetry(enableIstioAnnotation))
                             .editFirstRoute()
                                 .withWeight(enableIstioAnnotation.weight() == 0 ? null: enableIstioAnnotation.weight())
-                                .withNewDestination().withHost(istioService.getApplicationName()).withSubset(enableIstioAnnotation.version()).endDestination()
+                                .editOrNewDestinationLike(istioService.buildRoute(enableIstioAnnotation)).endDestination()
                             .endRoute()
                             .endHttp()
                             .endSpec()

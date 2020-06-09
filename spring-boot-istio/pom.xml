@@ -15,7 +15,7 @@
         <dependency>
             <groupId>me.snowdrop</groupId>
             <artifactId>istio-client</artifactId>
-            <version>1.1.1</version>
+            <version>1.5.4-Alpha1</version>
         </dependency>
         <dependency>
             <groupId>io.fabric8</groupId>
