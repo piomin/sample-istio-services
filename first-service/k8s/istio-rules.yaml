@@ -1,0 +1,41 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: first-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "first.example.com"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: first-service-destination
+spec:
+  host: first-service
+  subsets:
+    - name: v1
+      labels:
+        version: v1
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: first-service-route
+spec:
+  hosts:
+    - "first.example.com"
+  gateways:
+    - first-gateway
+  http:
+    - route:
+        - destination:
+            host: first-service
+            subset: v1
+#      timeout: 0.5s # - to enable if using Istio fault on callme-service route

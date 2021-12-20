@@ -8,5 +8,6 @@
   	<module>caller-service</module>
   	<module>callme-service</module>
       <module>spring-boot-istio</module>
+      <module>first-service</module>
   </modules>
 </project>

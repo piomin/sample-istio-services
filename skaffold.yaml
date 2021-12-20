@@ -1,0 +1,28 @@
+apiVersion: skaffold/v2beta22
+kind: Config
+metadata:
+  name: simple-istio-services
+build:
+  artifacts:
+    - image: piomin/first-service
+      jib:
+        project: first-service
+        args:
+          - -Pjib
+    - image: piomin/caller-service
+      jib:
+        project: caller-service
+        args:
+          - -Pjib
+    - image: piomin/callme-service
+      jib:
+        project: callme-service
+        args:
+          - -Pjib
+  tagPolicy:
+    gitCommit: {}
+deploy:
+  kubectl:
+    manifests:
+      - k8s/*.yaml
+      - '*/k8s/*.yaml'
