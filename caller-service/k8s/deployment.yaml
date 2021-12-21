@@ -31,7 +31,7 @@ metadata:
   labels:
     app: caller-service
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 8080
       name: http
