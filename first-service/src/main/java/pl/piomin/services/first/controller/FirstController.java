@@ -10,14 +10,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/first")
 public class FirstController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FirstController.class);
 
-    //    @Autowired
-    BuildProperties buildProperties;
+    @Autowired
+    Optional<BuildProperties> buildProperties;
     @Autowired
     RestTemplate restTemplate;
     @Value("${VERSION}")
@@ -25,7 +27,7 @@ public class FirstController {
 
     @GetMapping("/ping")
     public String ping() {
-//        LOGGER.info("Ping: name={}, version={}", buildProperties.getName(), version);
+        LOGGER.info("Ping: name={}, version={}", buildProperties.isPresent() ? buildProperties.get().getName() : "first-service", version);
         String response = restTemplate.getForObject("http://caller-service:8080/caller/ping", String.class);
         LOGGER.info("Calling: response={}", response);
         return "I'm first-service " + version + ". Calling... " + response;

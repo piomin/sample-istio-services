@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
@@ -23,13 +24,13 @@ public class CallmeController {
     private Random random = new Random();
 
     @Autowired
-    BuildProperties buildProperties;
+    Optional<BuildProperties> buildProperties;
     @Value("${VERSION}")
     private String version;
 
     @GetMapping("/ping")
     public String ping() {
-        LOGGER.info("Ping: name={}, version={}", buildProperties.getName(), version);
+        LOGGER.info("Ping: name={}, version={}", buildProperties.isPresent() ? buildProperties.get().getName() : "callme-service", version);
         return "I'm callme-service " + version;
     }
 
@@ -38,11 +39,11 @@ public class CallmeController {
         int r = random.nextInt(100);
         if (r % 2 == 0) {
             LOGGER.info("Ping with random error: name={}, version={}, random={}, httpCode={}",
-                    buildProperties.getName(), version, r, HttpStatus.GATEWAY_TIMEOUT);
+                    buildProperties.isPresent() ? buildProperties.get().getName() : "callme-service", version, r, HttpStatus.GATEWAY_TIMEOUT);
             return new ResponseEntity<>("Surprise " + INSTANCE_ID + " " + version, HttpStatus.GATEWAY_TIMEOUT);
         } else {
             LOGGER.info("Ping with random error: name={}, version={}, random={}, httpCode={}",
-                    buildProperties.getName(), version, r, HttpStatus.OK);
+                    buildProperties.isPresent() ? buildProperties.get().getName() : "callme-service", version, r, HttpStatus.OK);
             return new ResponseEntity<>("I'm callme-service" + INSTANCE_ID + " " + version, HttpStatus.OK);
         }
     }
@@ -50,7 +51,8 @@ public class CallmeController {
     @GetMapping("/ping-with-random-delay")
     public String pingWithRandomDelay() throws InterruptedException {
         int r = new Random().nextInt(3000);
-        LOGGER.info("Ping with random delay: name={}, version={}, delay={}", buildProperties.getName(), version, r);
+        LOGGER.info("Ping with random delay: name={}, version={}, delay={}",
+                buildProperties.isPresent() ? buildProperties.get().getName() : "callme-service", version, r);
         Thread.sleep(r);
         return "I'm callme-service " + version;
     }

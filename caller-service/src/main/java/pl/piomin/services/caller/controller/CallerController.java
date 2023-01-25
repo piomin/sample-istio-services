@@ -11,14 +11,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/caller")
 public class CallerController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CallerController.class);
 
-//    @Autowired
-    BuildProperties buildProperties;
+    @Autowired
+    Optional<BuildProperties> buildProperties;
     @Autowired
     RestTemplate restTemplate;
     @Value("${VERSION}")
@@ -26,7 +28,7 @@ public class CallerController {
 
     @GetMapping("/ping")
     public String ping() {
-//        LOGGER.info("Ping: name={}, version={}", buildProperties.getName(), version);
+        LOGGER.info("Ping: name={}, version={}", buildProperties.or(Optional::empty), version);
         String response = restTemplate.getForObject("http://callme-service:8080/callme/ping", String.class);
         LOGGER.info("Calling: response={}", response);
         return "I'm caller-service " + version + ". Calling... " + response;
@@ -34,7 +36,7 @@ public class CallerController {
 
     @GetMapping("/ping-with-random-error")
     public ResponseEntity<String> pingWithRandomError() {
-        LOGGER.info("Ping with random error: name={}, version={}", buildProperties.getName(), version);
+        LOGGER.info("Ping with random error: name={}, version={}", buildProperties.or(Optional::empty), version);
         ResponseEntity<String> responseEntity =
                 restTemplate.getForEntity("http://callme-service:8080/callme/ping-with-random-error", String.class);
         LOGGER.info("Calling: responseCode={}, response={}", responseEntity.getStatusCode(), responseEntity.getBody());
@@ -43,7 +45,7 @@ public class CallerController {
 
     @GetMapping("/ping-with-random-delay")
     public String pingWithRandomDelay() {
-        LOGGER.info("Ping with random delay: name={}, version={}", buildProperties.getName(), version);
+        LOGGER.info("Ping with random delay: name={}, version={}", buildProperties.or(Optional::empty), version);
         String response = restTemplate.getForObject("http://callme-service:8080/callme/ping-with-random-delay", String.class);
         LOGGER.info("Calling: response={}", response);
         return "I'm caller-service " + version + ". Calling... " + response;
