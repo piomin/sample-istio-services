@@ -2,20 +2,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>pl.piomin.services</groupId>
+	<parent>
+		<groupId>pl.piomin.services</groupId>
+		<artifactId>sample-istio-services</artifactId>
+		<version>1.1.0</version>
+	</parent>
+
 	<artifactId>caller-service</artifactId>
 	<version>1.1.0</version>
-
-	<properties>
-		<java.version>11</java.version>
-	</properties>
-
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.0.3</version>
-		<relativePath />
-	</parent>
 
 	<dependencies>
 		<dependency>
@@ -33,20 +27,9 @@
 		</dependency>
 		<dependency>
 			<groupId>io.specto</groupId>
-			<artifactId>hoverfly-java</artifactId>
+			<artifactId>hoverfly-java-junit5</artifactId>
 			<version>0.14.3</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.vintage</groupId>
-			<artifactId>junit-vintage-engine</artifactId>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.hamcrest</groupId>
-					<artifactId>hamcrest-core</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.github.tomakehurst</groupId>
