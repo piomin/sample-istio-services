@@ -3,6 +3,8 @@ kind: Config
 build:
   artifacts:
     - image: piomin/caller-service
-      jib: {}
+      jib:
+        args:
+          - -Pjib
   tagPolicy:
     gitCommit: {}

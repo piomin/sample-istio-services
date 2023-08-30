@@ -3,6 +3,8 @@ kind: Config
 build:
   artifacts:
     - image: piomin/first-service
-      jib: {}
+      jib:
+        args:
+          - -Pjib
   tagPolicy:
     gitCommit: {}

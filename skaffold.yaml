@@ -1,4 +1,4 @@
-apiVersion: skaffold/v2beta22
+apiVersion: skaffold/v4beta5
 kind: Config
 metadata:
   name: simple-istio-services
@@ -21,8 +21,15 @@ build:
           - -Pjib
   tagPolicy:
     gitCommit: {}
+manifests:
+  rawYaml:
+    - '*/k8s/deployment.yaml'
 deploy:
-  kubectl:
+  kubectl: {}
+profiles:
+  - name: istio
     manifests:
-      - k8s/*.yaml
-      - '*/k8s/*.yaml'
+      rawYaml:
+        - k8s/istio-*.yaml
+        - '*/k8s/deployment-versions.yaml'
+        - '*/k8s/istio-*.yaml'

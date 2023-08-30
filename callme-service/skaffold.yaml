@@ -3,6 +3,8 @@ kind: Config
 build:
   artifacts:
   - image: piomin/callme-service
-    jib: {}
+    jib:
+      args:
+        - -Pjib
   tagPolicy:
     gitCommit: {}

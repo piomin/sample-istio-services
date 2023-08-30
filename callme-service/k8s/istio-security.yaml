@@ -1,0 +1,16 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-v1-only
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: callme-service
+      version: v2
+  action: ALLOW
+  rules:
+    - to:
+      - operation:
+          methods:
+            - POST

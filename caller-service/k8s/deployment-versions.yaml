@@ -12,6 +12,7 @@ spec:
       name: caller-service
       labels:
         app: caller-service
+        version: v1
     spec:
       containers:
       - name: caller-service
@@ -30,7 +31,7 @@ metadata:
   labels:
     app: caller-service
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 8080
       name: http
