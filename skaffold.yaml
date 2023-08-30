@@ -9,16 +9,19 @@ build:
         project: first-service
         args:
           - -Pjib
+          - -DskipTests
     - image: piomin/caller-service
       jib:
         project: caller-service
         args:
           - -Pjib
+          - -DskipTests
     - image: piomin/callme-service
       jib:
         project: callme-service
         args:
           - -Pjib
+          - -DskipTests
   tagPolicy:
     gitCommit: {}
 manifests:

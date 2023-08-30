@@ -13,10 +13,6 @@
     <artifactId>first-service</artifactId>
     <version>1.1.0</version>
 
-    <properties>
-        <java.version>11</java.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
