@@ -16,7 +16,6 @@ public class CallerApplication {
 	@Bean
 	RestTemplate restTemplate() {
 		return new RestTemplateBuilder()
-//				.setReadTimeout(Duration.ofMillis(1000))
 				.build();
 	}
 	

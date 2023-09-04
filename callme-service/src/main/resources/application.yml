@@ -1,1 +1,10 @@
 spring.application.name: callme-service
+
+management:
+  endpoint:
+    metrics:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"

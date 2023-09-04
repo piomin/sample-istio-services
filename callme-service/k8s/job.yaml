@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: callme-service-snapshot-job
+  namespace: crac
+spec:
+  template:
+    spec:
+      containers:
+        - name: callme-service
+          image: callme-service:1.1.0
+          env:
+            - name: VERSION
+              value: "v1"
+          command: ["/bin/sh","-c", "/app/entrypoint.sh"]
+          volumeMounts:
+            - mountPath: /crac
+              name: crac
+          securityContext:
+            privileged: true
+      volumes:
+        - persistentVolumeClaim:
+            claimName: crac-store
+          name: crac
+      restartPolicy: Never
+  backoffLimit: 3

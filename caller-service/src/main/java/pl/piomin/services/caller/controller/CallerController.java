@@ -40,13 +40,15 @@ public class CallerController {
         ResponseEntity<String> responseEntity =
                 restTemplate.getForEntity("http://callme-service:8080/callme/ping-with-random-error", String.class);
         LOGGER.info("Calling: responseCode={}, response={}", responseEntity.getStatusCode(), responseEntity.getBody());
-        return new ResponseEntity<>("I'm caller-service " + version + ". Calling... " + responseEntity.getBody(), responseEntity.getStatusCode());
+        return new ResponseEntity<>("I'm caller-service " + version + ". Calling... " +
+                responseEntity.getBody(), responseEntity.getStatusCode());
     }
 
     @GetMapping("/ping-with-random-delay")
     public String pingWithRandomDelay() {
         LOGGER.info("Ping with random delay: name={}, version={}", buildProperties.or(Optional::empty), version);
-        String response = restTemplate.getForObject("http://callme-service:8080/callme/ping-with-random-delay", String.class);
+        String response = restTemplate
+                .getForObject("http://callme-service:8080/callme/ping-with-random-delay", String.class);
         LOGGER.info("Calling: response={}", response);
         return "I'm caller-service " + version + ". Calling... " + response;
     }

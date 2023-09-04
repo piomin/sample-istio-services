@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: callme-service
+  namespace: crac
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: callme-service
+  template:
+    metadata:
+      labels:
+        app: callme-service
+    spec:
+      containers:
+        - name: callme-service
+          image: callme-service:1.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: VERSION
+              value: "v1"
+          command: ["java"]
+          args: ["-XX:CRaCRestoreFrom=/crac"]
+#          args: ["-jar", "/app/callme-service-1.1.0.jar"]
+          volumeMounts:
+            - mountPath: /crac
+              name: crac
+          readinessProbe:
+            initialDelaySeconds: 0
+            periodSeconds: 1
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+          securityContext:
+            privileged: true
+#            allowPrivilegeEscalation: true
+#            runAsNonRoot: false
+          resources:
+            limits: 
+              cpu: '1'
+      volumes:
+        - name: crac
+          persistentVolumeClaim:
+            claimName: crac-store
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: callme-service
+  namespace: crac
+  labels:
+    app: callme-service
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    name: http
+  selector:
+    app: callme-service
