@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk:17-jdk-crac-latest
+FROM azul/zulu-openjdk:21-jdk-crac-latest
 #ENV JAVA_OPTS -XX:CRaCRestoreFrom=/crac
 COPY target/callme-service-1.1.0.jar /app/callme-service-1.1.0.jar
 #ENTRYPOINT ["sh", "-c"]
