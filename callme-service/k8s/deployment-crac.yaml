@@ -23,8 +23,8 @@ spec:
             - name: VERSION
               value: "v1"
           command: ["java"]
-          args: ["-XX:CRaCRestoreFrom=/crac"]
-#          args: ["-jar", "/app/callme-service-1.1.0.jar"]
+#          args: ["-XX:CRaCRestoreFrom=/crac"]
+          args: ["-jar", "/app/callme-service-1.1.0.jar"]
           volumeMounts:
             - mountPath: /crac
               name: crac
