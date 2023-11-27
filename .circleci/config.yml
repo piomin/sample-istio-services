@@ -4,6 +4,34 @@ executors:
   jdk:
     docker:
       - image: 'cimg/openjdk:21.0'
+  machine_executor_amd64:
+    machine:
+      image: ubuntu-2204:2022.04.2
+    environment:
+      architecture: "amd64"
+      platform: "linux/amd64"
+
+jobs:
+  deploy-k8s:
+    executor: machine_executor_amd64
+    steps:
+      - checkout
+      - run:
+          name: install skaffold
+          command: |
+            curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+            chmod +x skaffold
+            sudo mv skaffold /usr/local/bin
+      - run:
+          name: install kind
+          command: |
+            [ $(uname -m) = x86_64 ] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
+            chmod +x ./kind
+            sudo mv ./kind /usr/local/bin/kind
+      - run:
+          name: create kind cluster
+          command: |
+            kind create cluster --name c1
 
 orbs:
   maven: circleci/maven@1.4.1
@@ -13,3 +41,4 @@ workflows:
     jobs:
       - maven/test:
           executor: jdk
+      - deploy-k8s
