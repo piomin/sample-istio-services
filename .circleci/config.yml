@@ -17,21 +17,25 @@ jobs:
     steps:
       - checkout
       - run:
-          name: install skaffold
+          name: Install Skaffold
           command: |
             curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
             chmod +x skaffold
             sudo mv skaffold /usr/local/bin
       - run:
-          name: install kind
+          name: Install Kind
           command: |
             [ $(uname -m) = x86_64 ] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
             chmod +x ./kind
             sudo mv ./kind /usr/local/bin/kind
       - run:
-          name: create kind cluster
+          name: Create Kind Cluster
           command: |
             kind create cluster --name c1
+      - run:
+          name: Deploy to K8s
+          command: |
+            skaffold run
 
 orbs:
   maven: circleci/maven@1.4.1
