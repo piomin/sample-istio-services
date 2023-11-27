@@ -32,10 +32,14 @@ jobs:
           name: Create Kind Cluster
           command: |
             kind create cluster --name c1
+#      - run:
+#          name: Deploy to K8s
+#          command: |
+#            skaffold run
       - run:
-          name: Deploy to K8s
+          name: Delete Kind Cluster
           command: |
-            skaffold run
+            kind delete cluster --name c1
 
 orbs:
   maven: circleci/maven@1.4.1
