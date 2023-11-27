@@ -16,12 +16,12 @@ jobs:
     executor: machine_executor_amd64
     steps:
       - checkout
-      - - run:
-            name: Install Kubectl
-            command: |
-              curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-              chmod +x kubectl
-              sudo mv ./kubectl /usr/local/bin/kubectl
+      - run:
+          name: Install Kubectl
+          command: |
+            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            chmod +x kubectl
+            sudo mv ./kubectl /usr/local/bin/kubectl
       - run:
           name: Install Skaffold
           command: |
