@@ -1,4 +1,4 @@
-apiVersion: skaffold/v2beta22
+apiVersion: skaffold/v4beta5
 kind: Config
 build:
   artifacts:
@@ -8,3 +8,6 @@ build:
           - -Pjib
   tagPolicy:
     gitCommit: {}
+manifests:
+  rawYaml:
+    - k8s/deployment.yaml
