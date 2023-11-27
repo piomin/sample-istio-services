@@ -36,7 +36,7 @@ jobs:
             sudo update-alternatives --set java /usr/lib/jvm/java-21-openjdk-amd64/bin/java
             sudo update-alternatives --set javac /usr/lib/jvm/java-21-openjdk-amd64/bin/javac
             java -version
-            export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64/bin/java
+            export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
       - run:
           name: Create Kind Cluster
           command: |
@@ -44,7 +44,7 @@ jobs:
       - run:
           name: Deploy to K8s
           command: |
-            export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64/bin/java
+            export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
             skaffold run
       - run:
           name: Delete Kind Cluster
