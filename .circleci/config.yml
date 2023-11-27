@@ -29,6 +29,13 @@ jobs:
             chmod +x ./kind
             sudo mv ./kind /usr/local/bin/kind
       - run:
+          name: Install OpenJDK 21
+          command: |
+            sudo apt-get update && sudo apt-get install openjdk-21-jdk
+            sudo update-alternatives --set java /usr/lib/jvm/java-21-openjdk-amd64/bin/java
+            sudo update-alternatives --set javac /usr/lib/jvm/java-21-openjdk-amd64/bin/javac
+            java -version
+      - run:
           name: Create Kind Cluster
           command: |
             kind create cluster --name c1
