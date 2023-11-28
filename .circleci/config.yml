@@ -56,10 +56,6 @@ jobs:
           command: |
             export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
             skaffold run
-      - run:
-          name: Delete Kind Cluster
-          command: |
-            kind delete cluster --name c1
   cleanup:
     executor: machine_executor_amd64
     steps:
