@@ -1,5 +1,9 @@
 version: 2.1
 
+orbs:
+  maven: circleci/maven@1.4.1
+  grafana: grafana/k6@1.1.3
+
 executors:
   jdk:
     docker:
@@ -52,20 +56,32 @@ jobs:
           command: |
             export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
             skaffold run
-      - grafana/k6:
-          script: first-service/src/test/resources/k6/load-test.js
+      - run:
+          name: Delete Kind Cluster
+          command: |
+            kind delete cluster --name c1
+  cleanup:
+    executor: machine_executor_amd64
+    steps:
       - run:
           name: Delete Kind Cluster
           command: |
             kind delete cluster --name c1
 
-orbs:
-  maven: circleci/maven@1.4.1
-  grafana: grafana/k6@1.1.3
-
 workflows:
-  maven_test:
+  build-and-deploy:
     jobs:
       - maven/test:
+          name: test
           executor: jdk
-      - deploy-k8s
+      - deploy-k8s:
+          requires:
+            - test
+      - grafana/k6:
+          name: k6
+          requires:
+            - deploy-k8s
+          script: first-service/src/test/resources/k6/load-test.js
+      - cleanup:
+          requires:
+            - k6
