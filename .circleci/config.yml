@@ -67,6 +67,7 @@ jobs:
       - run:
           name: Run K6 Test
           command: |
+            kubectl get svc
             k6 run first-service/src/test/resources/k6/load-test.js
       - run:
           name: Delete Kind Cluster
