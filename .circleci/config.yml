@@ -39,6 +39,14 @@ jobs:
             chmod +x ./kind
             sudo mv ./kind /usr/local/bin/kind
       - run:
+          name: Install Grafana K6
+          command: |
+            sudo gpg -k
+            sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+            echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+            sudo apt-get update
+            sudo apt-get install k6
+      - run:
           name: Install OpenJDK 21
           command: |
             java -version
@@ -56,6 +64,14 @@ jobs:
           command: |
             export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
             skaffold run
+      - run:
+          name: Run K6 Test
+          command: |
+            k6 run first-service/src/test/resources/k6/load-test.js
+      - run:
+          name: Delete Kind Cluster
+          command: |
+            kind delete cluster --name c1
   cleanup:
     executor: machine_executor_amd64
     steps:
@@ -73,12 +89,3 @@ workflows:
       - deploy-k8s:
           requires:
             - test
-      - grafana/k6:
-          executor: machine_executor_amd64
-          name: k6
-          requires:
-            - deploy-k8s
-          script: first-service/src/test/resources/k6/load-test.js
-      - cleanup:
-          requires:
-            - k6
