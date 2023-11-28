@@ -29,9 +29,10 @@ metadata:
   labels:
     app: first-service
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
   - port: 8080
     name: http
+    nodePort: 30000
   selector:
     app: first-service
