@@ -74,6 +74,7 @@ workflows:
           requires:
             - test
       - grafana/k6:
+          executor: machine_executor_amd64
           name: k6
           requires:
             - deploy-k8s
