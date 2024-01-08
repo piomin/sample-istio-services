@@ -2,10 +2,11 @@ apiVersion: skaffold/v4beta5
 kind: Config
 build:
   artifacts:
-  - image: callme-service
+  - image: piomin/callme-service
     jib:
       args:
         - -Pjib
+        - -DskipTests
   tagPolicy:
     gitCommit: {}
 manifests:
