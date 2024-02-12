@@ -10,10 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.piomin.services.callme.event.ProcessingEvent;
 
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
 @RequestMapping("/callme")
@@ -22,6 +24,7 @@ public class CallmeController {
     private static final Logger LOGGER = LoggerFactory.getLogger(CallmeController.class);
     private static final String INSTANCE_ID = UUID.randomUUID().toString();
     private Random random = new Random();
+    private AtomicInteger index = new AtomicInteger();
 
     @Autowired
     Optional<BuildProperties> buildProperties;
@@ -51,9 +54,13 @@ public class CallmeController {
     @GetMapping("/ping-with-random-delay")
     public String pingWithRandomDelay() throws InterruptedException {
         int r = new Random().nextInt(3000);
-        LOGGER.info("Ping with random delay: name={}, version={}, delay={}",
+        int i = index.incrementAndGet();
+        ProcessingEvent event = new ProcessingEvent(i);
+        event.begin();
+        LOGGER.info("Ping with random delay: id={}, name={}, version={}, delay={}", i,
                 buildProperties.isPresent() ? buildProperties.get().getName() : "callme-service", version, r);
         Thread.sleep(r);
+        event.commit();
         return "I'm callme-service " + version;
     }
 

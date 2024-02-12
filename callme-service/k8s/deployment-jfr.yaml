@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: callme-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: callme-service
+  template:
+    metadata:
+      labels:
+        app: callme-service
+    spec:
+      containers:
+        - name: callme-service
+          image: piomin/callme-service:1.2.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+            - containerPort: 9091
+          env:
+            - name: VERSION
+              value: "v1"
+            - name: BPL_JFR_ENABLED
+              value: "true"
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Dcom.sun.management.jmxremote.port=9091 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: callme-service
+  labels:
+    app: callme-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      name: http
+    - port: 9091
+      name: jfr-jmx
+  selector:
+    app: callme-service

@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>callme-service</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.1</version>
 
     <dependencies>
         <dependency>
@@ -64,6 +64,34 @@
                     </exclusions>
                 </dependency>
             </dependencies>
+        </profile>
+        <profile>
+            <id>build-image</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <image>
+                                <builder>paketobuildpacks/builder-jammy-base:latest</builder>
+                                <name>piomin/${project.artifactId}:${project.version}</name>
+<!--                                <env>-->
+<!--                                    <BPL_JFR_ENABLED>true</BPL_JFR_ENABLED>-->
+<!--                                    <BPL_JMX_ENABLED>true</BPL_JMX_ENABLED>-->
+<!--                                </env>-->
+                            </image>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>build-image</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 
