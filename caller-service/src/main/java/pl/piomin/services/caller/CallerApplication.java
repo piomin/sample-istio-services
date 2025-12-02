@@ -2,9 +2,8 @@ package pl.piomin.services.caller;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 @SpringBootApplication
 public class CallerApplication {
@@ -14,9 +13,10 @@ public class CallerApplication {
 	}
 
 	@Bean
-	RestTemplate restTemplate() {
-		return new RestTemplateBuilder()
-				.build();
+	RestClient restClient() {
+		return RestClient.builder()
+			.baseUrl("http://callme-service:8080")
+			.build();
 	}
-	
+
 }

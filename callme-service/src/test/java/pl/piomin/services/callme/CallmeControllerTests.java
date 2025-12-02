@@ -1,29 +1,37 @@
 package pl.piomin.services.callme;
 
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.test.web.servlet.client.RestTestClient;
+import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
                 properties = "VERSION=v1")
 public class CallmeControllerTests {
 
-    @Autowired
-    TestRestTemplate restTemplate;
+    RestTestClient restTestClient;
+
+    @BeforeEach
+    public void setUp(WebApplicationContext context) {
+        restTestClient = RestTestClient.bindToApplicationContext(context)
+                .baseUrl("/callme")
+                .build();
+    }
 
     @Test
     void ping() {
-        String res = restTemplate.getForObject("/callme/ping", String.class);
-        Assertions.assertNotNull(res);
-        Assertions.assertEquals("I'm callme-service v1", res);
+        restTestClient.get().uri("/ping")
+                .exchange()
+                .expectBody(String.class)
+                .isEqualTo("I'm callme-service v1");
     }
 
     @Test
     void pingWithRandomDelay() {
-        String res = restTemplate.getForObject("/callme/ping-with-random-delay", String.class);
-        Assertions.assertNotNull(res);
-        Assertions.assertEquals("I'm callme-service v1", res);
+        restTestClient.get().uri("/ping-with-random-delay")
+                .exchange()
+                .expectBody(String.class)
+                .isEqualTo("I'm callme-service v1");
     }
 }
