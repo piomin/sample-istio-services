@@ -1,0 +1,10 @@
+spring.application.name: callme-service-with-starter
+
+management:
+  endpoint:
+    metrics:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"

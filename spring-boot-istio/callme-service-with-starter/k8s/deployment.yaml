@@ -1,0 +1,66 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: callme-service-with-starter
+rules:
+  - apiGroups: ["networking.istio.io"]
+    resources: ["virtualservices", "destinationrules", "gateways"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: callme-service-with-starter
+subjects:
+  - kind: ServiceAccount
+    name: callme-service-with-starter
+    namespace: spring
+roleRef:
+  kind: Role
+  name: callme-service-with-starter
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: callme-service-with-starter
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: callme-service-with-starter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: callme-service-with-starter
+  template:
+    metadata:
+      labels:
+        app: callme-service-with-starter
+    spec:
+      containers:
+        - name: callme-service-with-starter
+          image: piomin/callme-service-with-starter
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: VERSION
+              value: "v1"
+      serviceAccountName: callme-service-with-starter
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: callme-service-with-starter
+  labels:
+    app: callme-service-with-starter
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    name: http
+  selector:
+    app: callme-service-with-starter

@@ -1,0 +1,14 @@
+apiVersion: skaffold/v4beta5
+kind: Config
+build:
+  artifacts:
+  - image: piomin/callme-service-with-starter
+    jib:
+      args:
+        - -Pjib
+        - -DskipTests
+  tagPolicy:
+    gitCommit: {}
+manifests:
+  rawYaml:
+    - k8s/deployment.yaml
