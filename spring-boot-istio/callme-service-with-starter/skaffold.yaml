@@ -12,3 +12,4 @@ build:
 manifests:
   rawYaml:
     - k8s/deployment.yaml
+    - k8s/deployment-with-version.yaml
