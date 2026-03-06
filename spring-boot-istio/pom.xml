@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.9</version>
+        <version>4.0.3</version>
         <relativePath />
     </parent>
 
@@ -29,11 +29,6 @@
                         <groupId>com.google.cloud.tools</groupId>
                         <artifactId>jib-maven-plugin</artifactId>
                         <version>3.5.1</version>
-                        <configuration>
-                            <from>
-                                <image>eclipse-temurin:21-jdk-ubi9-minimal</image>
-                            </from>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
